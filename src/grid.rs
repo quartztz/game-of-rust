@@ -25,13 +25,13 @@ pub struct Cell {
 }
 
 impl Cell {
-	pub fn build(x: i32, y: i32, scale: i32) -> Cell {
+	pub fn build(x: i32, y: i32, scale: i32, p: f32) -> Cell {
 		let mut rng_gen = rand::thread_rng();
 		Cell {
 			x: x,
 			y: y,
 			rect: Rect::new(x * scale, y * scale, scale as u32, scale as u32),
-			alive: if rng_gen.gen::<f32>() > P { true } else { false } ,
+			alive: if rng_gen.gen::<f32>() > p { true } else { false } ,
 		}
 	}
 	pub fn tick(&self, neighbours: i32) -> Cell {
@@ -103,7 +103,26 @@ impl Grid {
 		for i in 0..height/scale {
 			let mut line: Vec<Cell> = vec![];
 			for j in 0..width/scale {
-				line.push(Cell::build(j as i32, i as i32, scale));
+				line.push(Cell::build(j as i32, i as i32, scale, P));
+			}
+			cells.push(line);
+		}
+
+		Grid {
+			cells: cells,
+			max_x: width / scale,
+			max_y: height / scale,
+			scale: scale,
+		}
+	}
+
+	pub fn build_empty(height: i32, width: i32, scale: i32) -> Grid {
+		let mut cells: Vec<Vec<Cell>> = vec![];
+
+		for i in 0..height/scale {
+			let mut line: Vec<Cell> = vec![];
+			for j in 0..width/scale {
+				line.push(Cell::build(j as i32, i as i32, scale, 1.0));
 			}
 			cells.push(line);
 		}

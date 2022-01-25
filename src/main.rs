@@ -57,6 +57,11 @@ fn main() -> Result<(), String> {
 							=> { break 'running },
 						Event::KeyDown { keycode: Some(Keycode::R), ..}
 							=> { grid = Grid::build(height as i32, width as i32, scale) },
+						Event::KeyDown { keycode: Some(Keycode::Q), ..}
+						=> { 
+							grid = Grid::build_empty(height as i32, width as i32, scale);
+							state = CurrentState::SETUP;
+						},
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
 							=> { 
 								FPS = 8; 
@@ -90,6 +95,11 @@ fn main() -> Result<(), String> {
 							=> { break 'running },
 						Event::KeyDown { keycode: Some(Keycode::R), ..}
 							=> { grid = Grid::build(height as i32, width as i32, scale) },
+						Event::KeyDown { keycode: Some(Keycode::Q), ..}
+							=> { 
+								grid = Grid::build_empty(height as i32, width as i32, scale);
+								state = CurrentState::SETUP;
+							},
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
 							=> { state = CurrentState::RUNNING; },
 						Event::KeyDown { keycode: Some(Keycode::Plus), .. }
@@ -127,8 +137,6 @@ fn main() -> Result<(), String> {
 		canvas.present();
 		::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / FPS));
 	}
-
-	println!("hello world");
 
 	Ok(())
 }

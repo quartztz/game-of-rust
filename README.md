@@ -21,6 +21,7 @@ Default controls are:
  - esc: quit
  - plus/minus: speed up/slow down game
  - R [when paused/setup]: reload grid to random state
+ - Q [when paused/setup]: reload grid to empty state, and to setup phase
 
 ## issues/todo
 
