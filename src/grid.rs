@@ -6,6 +6,7 @@ use sdl2::render::*;
 
 use rand::Rng;
 use std::cmp;
+use std::fs;
 
 pub const BACKGROUND: pixels::Color = pixels::Color::RGB(0, 0, 0);
 pub const DEAD: pixels::Color = pixels::Color::RGB(0, 0x80, 0);
@@ -16,6 +17,18 @@ pub const P: f32 = 0.75;
 pub trait Drawable {
 	fn draw(&self, canvas: &mut Canvas<video::Window>) -> () { }
 }
+
+// HELPER
+
+pub fn open_file_lines(file: &str) -> Vec<String> {
+	return fs::read_to_string(file)
+		.expect("something went wrong")
+		.split("\n")
+		.map(|s| s.to_string())
+		.collect();
+}
+
+// CELL
 
 pub struct Cell {
 	x: i32,
@@ -37,17 +50,9 @@ impl Cell {
 	pub fn tick(&self, neighbours: i32) -> Cell {
 		let next: bool;
 		if self.alive {
-			if neighbours == 2 || neighbours == 3 {
-				next = true;
-			} else {
-				next = false;
-			}
+			next = neighbours == 2 || neighbours == 3;
 		} else {
-			if neighbours == 3 {
-				next = true;
-			} else {
-				next = false;
-			}
+			next = neighbours == 3;
 		}
 
 		Cell {
@@ -89,6 +94,8 @@ impl Drawable for Cell {
 	}
 }
 
+// GRID
+
 pub struct Grid {
 	cells: Vec<Vec<Cell>>,
 	max_x: i32, 
@@ -123,6 +130,37 @@ impl Grid {
 			let mut line: Vec<Cell> = vec![];
 			for j in 0..width/scale {
 				line.push(Cell::build(j as i32, i as i32, scale, 1.0));
+			}
+			cells.push(line);
+		}
+
+		Grid {
+			cells: cells,
+			max_x: width / scale,
+			max_y: height / scale,
+			scale: scale,
+		}
+	}
+
+	pub fn build_from_file(height: i32, width: i32, scale: i32, file: &str) -> Grid {
+		let mut cells: Vec<Vec<Cell>> = vec![];
+		let lines: Vec<String> = open_file_lines(file);
+
+		assert_eq!(lines.len() as i32, height/scale, "number of lines doesn't match canvas size");
+		assert_eq!(lines[0].len() as i32, width/scale, "length of line doesn't match canvas size");
+
+		for i in 0..height/scale {
+			let mut line: Vec<Cell> = vec![];
+			for j in 0..width/scale {
+				let current_ch = lines[i as usize].chars().nth(j as usize).unwrap();
+				if current_ch == '0' {
+					line.push(Cell::build(j as i32, i as i32, scale, 1.0));
+				} else if current_ch == '1' {
+					line.push(Cell::build(j as i32, i as i32, scale, 0.0));
+				} else {
+					println!("unrecognized character, assumed dead");
+					line.push(Cell::build(j as i32, i as i32, scale, 1.0));
+				}
 			}
 			cells.push(line);
 		}

@@ -26,3 +26,5 @@ Default controls are:
 ## issues/todo
 
  - [ ] i thought i had fixed the edge issue by having it loop around: apparently not, but the issue is fixed and i don't know _exactly_ what it does but i'll leave it at that for now.
+
+ - [ ] allow reading states from an input file, maybe a list of binary strings? TEMPLATE: 1920x1080 @ 40px scale => 27 lines of 48 characters (potentially 0s and 1s)
