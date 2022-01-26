@@ -22,8 +22,8 @@ Default controls are:
  - plus/minus: speed up/slow down game
  - R [when paused/setup]: reload grid to random state
  - Q [when paused/setup]: reload grid to empty state, and to setup phase
- - I [when paused]: import file "gun_and_eater@20.txt" in the project's root dir
- - E [when paused]: export current state to file "export.txt"
+ - I [when paused/setup]: import file "gun_and_eater@20.txt" in the project's root dir
+ - E [when paused/setup]: export current state to file "export.txt"
 
 ## issues/todo
 
