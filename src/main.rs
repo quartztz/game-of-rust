@@ -60,7 +60,7 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::Q), ..}
 						=> { 
 							grid = Grid::build_empty(height as i32, width as i32, scale);
-							FPS = 24;
+							FPS = 30;
 							state = CurrentState::SETUP;
 						},
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
@@ -104,7 +104,7 @@ fn main() -> Result<(), String> {
 							},
 						Event::KeyDown { keycode: Some(Keycode::I), ..}
 							=> { 
-								grid = Grid::build_from_file(height as i32, width as i32, scale as i32, "test.txt");
+								grid = Grid::build_from_file(height as i32, width as i32, scale as i32, "gun_and_eater@20.txt");
 								FPS = 24;
 								state = CurrentState::SETUP;
 							},
