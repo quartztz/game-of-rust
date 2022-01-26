@@ -15,7 +15,7 @@ pub mod grid;
 use grid::*;
 
 enum CurrentState {
-	SETUP,
+    SETUP,
 	PAUSED,
 	RUNNING,
 }
@@ -23,7 +23,7 @@ enum CurrentState {
 fn main() -> Result<(), String> {
 	let width = 1920;
 	let height = 1080;
-	let scale = 40;
+	let scale = 20;
 	let mut FPS = 24;
 
 	let cooldown_timer = 4;
@@ -102,12 +102,16 @@ fn main() -> Result<(), String> {
 								FPS = 24;
 								state = CurrentState::SETUP;
 							},
-						Event::KeyDown { keycode: Some(Keycode::E), ..}
+						Event::KeyDown { keycode: Some(Keycode::I), ..}
 							=> { 
 								grid = Grid::build_from_file(height as i32, width as i32, scale as i32, "test.txt");
 								FPS = 24;
 								state = CurrentState::SETUP;
 							},
+						Event::KeyDown { keycode: Some(Keycode::E), ..}
+							=> {
+								grid.export_to_file("export.txt");
+							}
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
 							=> { state = CurrentState::RUNNING; },
 						Event::KeyDown { keycode: Some(Keycode::Plus), .. }
@@ -115,6 +119,18 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::Minus), .. }
 							=> { FPS = if FPS == 1 { 1 } else { FPS - 1 } }
 						_ => {}
+					}
+				}
+				
+				if !on_cooldown {
+					if grid.update(&event_pump) {
+						on_cooldown = true;
+					}
+				} else {
+					cooldown_counter += 1;
+					if cooldown_counter == cooldown_timer {
+						on_cooldown = false;
+						cooldown_counter = 0;
 					}
 				}
 			},

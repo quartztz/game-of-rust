@@ -7,6 +7,7 @@ use sdl2::render::*;
 use rand::Rng;
 use std::cmp;
 use std::fs;
+use std::io::{BufWriter, Write};
 
 pub const BACKGROUND: pixels::Color = pixels::Color::RGB(0, 0, 0);
 pub const DEAD: pixels::Color = pixels::Color::RGB(0, 0x80, 0);
@@ -16,6 +17,10 @@ pub const P: f32 = 0.75;
 
 pub trait Drawable {
 	fn draw(&self, canvas: &mut Canvas<video::Window>) -> () { }
+}
+
+pub trait Stringable {
+	fn to_string(&self) -> char;
 }
 
 // HELPER
@@ -91,6 +96,12 @@ impl Drawable for Cell {
 			canvas.set_draw_color(ALIVE);
 			canvas.fill_rect(self.rect);
 		}
+	}
+}
+
+impl Stringable for Cell {
+	fn to_string(&self) -> char {
+		return if self.alive { '1' } else { '0' }
 	}
 }
 
@@ -170,6 +181,18 @@ impl Grid {
 			max_x: width / scale,
 			max_y: height / scale,
 			scale: scale,
+		}
+	}
+
+	pub fn export_to_file(&self, file: &str) -> () {
+		let f = fs::File::create(file).unwrap();
+		let mut writer = BufWriter::new(&f);
+
+		for line in &self.cells {
+			for cell in line {
+				write!(&mut writer, "{}", cell.to_string());
+			}
+			writeln!(&mut writer, "");
 		}
 	}
 

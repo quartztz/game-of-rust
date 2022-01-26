@@ -22,9 +22,15 @@ Default controls are:
  - plus/minus: speed up/slow down game
  - R [when paused/setup]: reload grid to random state
  - Q [when paused/setup]: reload grid to empty state, and to setup phase
+ - I [when paused]: import file "text.txt" in the project's root dir
+ - E [when paused]: export current state to file "export.txt"
 
 ## issues/todo
 
  - [ ] i thought i had fixed the edge issue by having it loop around: apparently not, but the issue is fixed and i don't know _exactly_ what it does but i'll leave it at that for now.
 
- - [ ] allow reading states from an input file, maybe a list of binary strings? TEMPLATE: 1920x1080 @ 40px scale => 27 lines of 48 characters (potentially 0s and 1s)
+ - [x] allow reading states from an input file, maybe a list of binary strings? TEMPLATE: 1920x1080 @ 40px scale => 27 lines of 48 characters (potentially 0s and 1s)
+
+ - [ ] allow choosing which file to import
+
+ - [x] allow exporting current state to file in the same format as reader
