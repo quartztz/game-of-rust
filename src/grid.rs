@@ -187,12 +187,16 @@ impl Grid {
 	pub fn export_to_file(&self, file: &str) -> () {
 		let f = fs::File::create(file).unwrap();
 		let mut writer = BufWriter::new(&f);
+		let mut i = 0;
 
 		for line in &self.cells {
 			for cell in line {
 				write!(&mut writer, "{}", cell.to_string());
 			}
-			writeln!(&mut writer, "");
+			i += 1;
+			if i != self.max_y {
+				writeln!(&mut writer, "");
+			} 
 		}
 	}
 
