@@ -22,15 +22,18 @@ Default controls are:
  - plus/minus: speed up/slow down game
  - R [when paused/setup]: reload grid to random state
  - Q [when paused/setup]: reload grid to empty state, and to setup phase
- - I [when paused/setup]: import file "gun_and_eater@20.txt" in the project's root dir
  - E [when paused/setup]: export current state to file "export.txt"
+ - M [when paused]: open import modal
+ - enter [when importing]: choose current file
 
 ## issues/todo
 
  - [ ] i thought i had fixed the edge issue by having it loop around: apparently not, but the issue is fixed and i don't know _exactly_ what it does but i'll leave it at that for now.
 
- - [x] allow reading states from an input file, maybe a list of binary strings? TEMPLATE: 1920x1080 @ 40px scale => 27 lines of 48 characters (potentially 0s and 1s)
+ - [x] allow reading states from an input file, maybe a list of binary strings? 
 
- - [ ] allow choosing which file to import
+ - [x] allow choosing which file to import
+
+ - [ ] allow more flexible importing: right now, it only accepts import if the exact conditions are met, and panics otherwise: need to find a way to allow funky imports or fail without breaking. (could maybe use a "setup" line as first line of text file to import specifying width/height/scale expected)
 
  - [x] allow exporting current state to file in the same format as reader
