@@ -21,24 +21,29 @@ enum CurrentState {
   SETUP,
 	PAUSED,
 	RUNNING,
+	IMPORT,
 }
 
-fn main() -> Result<(), String> {
-	let width: i32 = 1280;
-	let height: i32 = 720;
-	let scale: i32 = 20;
-	let mut FPS = 24;
+const WIDTH: i32 = 1920;
+const HEIGHT: i32 = 1080;
+const SCALE: i32 = 20;
+const EDIT_FPS: i32 = 24;
+const RUN_FPS: i32 = 10;
+const COOLDOWN_TIMER: i32 = 8;
 
-	let cooldown_timer = 4;
+fn main() -> Result<(), String> {
+	let mut FPS = EDIT_FPS;
+	let mut stored_FPS: i32 = RUN_FPS;
+
 	let mut cooldown_counter = 0;
 	let mut on_cooldown = false;
 
 	let sdl_context = sdl2::init()?;
 	let video_subsystem = sdl_context.video()?;
 
-	let window = video_subsystem.window("Game Of Life", width as u32, height as u32)
+	let window = video_subsystem.window("Game Of Life", WIDTH as u32, HEIGHT as u32)
 		.position_centered()
-		// .fullscreen()
+		.fullscreen()
 		.build()
 		.unwrap();
 
@@ -50,20 +55,11 @@ fn main() -> Result<(), String> {
 
 	let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
 
-	let mut font = ttf_context.load_font("./Helvetica.ttf", scale as u16)?;
+	let fc = FontCreator::build("./FiraCode-Retina.ttf".to_string(), ttf_context, texture_creator, SCALE);
 
-	let surface = font
-        .render("Fuck Off Nigga")
-        .blended(Color::RGBA(255, 0, 0, 255))
-        .map_err(|e| e.to_string())?;
-    let texture = texture_creator
-        .create_texture_from_surface(&surface)
-        .map_err(|e| e.to_string())?;
-
-
-	let mut grid: Grid = Grid::build(height, width, scale);
+	let mut grid: Grid = Grid::build(HEIGHT, WIDTH, SCALE);
 	let mut state: CurrentState = CurrentState::SETUP;
-	let mut modal: ImportModal = ImportModal::build(height, width, scale);
+	let mut modal: ImportModal = ImportModal::build(HEIGHT, WIDTH, SCALE, fc);
 
 	'running: loop {
 		match state {
@@ -74,23 +70,23 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::Escape), ..}
 							=> { break 'running },
 						Event::KeyDown { keycode: Some(Keycode::R), ..}
-							=> { grid = Grid::build(height as i32, width as i32, scale) },
+							=> { grid = Grid::build(HEIGHT as i32, WIDTH as i32, SCALE) },
 						Event::KeyDown { keycode: Some(Keycode::Q), ..}
 						=> { 
-							grid = Grid::build_empty(height as i32, width as i32, scale);
+							grid = Grid::build_empty(HEIGHT as i32, WIDTH as i32, SCALE);
 							FPS = 30;
 							state = CurrentState::SETUP;
 						},
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
 							=> { 
-								FPS = 8; 
+								FPS = RUN_FPS; 
 								state = CurrentState::RUNNING; 
 							},
 						Event::KeyDown { keycode: Some(Keycode::I), ..}
 							=> {
 								// change this if you want to import another file
-								grid = Grid::build_from_file(height as i32, width as i32, scale as i32, "gun_and_eater@20.txt");
-								FPS = 24;
+								grid = Grid::build_from_file(HEIGHT as i32, WIDTH as i32, SCALE as i32, "gun_and_eater@20.txt");
+								FPS = EDIT_FPS;
 								state = CurrentState::SETUP;
 							},
 						Event::KeyDown { keycode: Some(Keycode::E), ..}
@@ -110,7 +106,7 @@ fn main() -> Result<(), String> {
 					}
 				} else {
 					cooldown_counter += 1;
-					if cooldown_counter == cooldown_timer {
+					if cooldown_counter == COOLDOWN_TIMER {
 						on_cooldown = false;
 						cooldown_counter = 0;
 					}
@@ -124,18 +120,18 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::Escape), ..}
 							=> { break 'running },
 						Event::KeyDown { keycode: Some(Keycode::R), ..}
-							=> { grid = Grid::build(height as i32, width as i32, scale) },
+							=> { grid = Grid::build(HEIGHT as i32, WIDTH as i32, SCALE) },
 						Event::KeyDown { keycode: Some(Keycode::Q), ..}
 							=> { 
-								grid = Grid::build_empty(height as i32, width as i32, scale);
-								FPS = 24;
+								grid = Grid::build_empty(HEIGHT as i32, WIDTH as i32, SCALE);
+								FPS = EDIT_FPS;
 								state = CurrentState::SETUP;
 							},
 						Event::KeyDown { keycode: Some(Keycode::I), ..}
 							=> {
 								// change this if you want to import another file
-								grid = Grid::build_from_file(height as i32, width as i32, scale as i32, "gun_and_eater@20.txt");
-								FPS = 24;
+								grid = Grid::build_from_file(HEIGHT as i32, WIDTH as i32, SCALE as i32, "gun_and_eater@20.txt");
+								FPS = EDIT_FPS;
 								state = CurrentState::SETUP;
 							},
 						Event::KeyDown { keycode: Some(Keycode::E), ..}
@@ -145,9 +141,13 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::M), ..}
 							=> {
 								modal.toggle();
+								state = CurrentState::IMPORT;
 							}
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
-							=> { state = CurrentState::RUNNING; },
+							=> { 
+								FPS = stored_FPS;
+								state = CurrentState::RUNNING; 
+							},
 						Event::KeyDown { keycode: Some(Keycode::Plus), .. }
 							=> { FPS += 1 },
 						Event::KeyDown { keycode: Some(Keycode::Minus), .. }
@@ -162,7 +162,7 @@ fn main() -> Result<(), String> {
 					}
 				} else {
 					cooldown_counter += 1;
-					if cooldown_counter == cooldown_timer {
+					if cooldown_counter == COOLDOWN_TIMER {
 						on_cooldown = false;
 						cooldown_counter = 0;
 					}
@@ -175,7 +175,11 @@ fn main() -> Result<(), String> {
 						Event::KeyDown { keycode: Some(Keycode::Escape), .. } 
 							=> { break 'running },
 						Event::KeyDown { keycode: Some(Keycode::Return), ..}
-							=> { state = CurrentState::PAUSED },
+							=> { 
+								stored_FPS = FPS;
+								FPS = EDIT_FPS;
+								state = CurrentState::PAUSED
+							},
 						Event::KeyDown { keycode: Some(Keycode::Plus), .. }
 							=> { FPS += 1 },
 						Event::KeyDown { keycode: Some(Keycode::Minus), .. }
@@ -183,7 +187,35 @@ fn main() -> Result<(), String> {
 						_ => {}
 					}
 				}
+
 				grid.tick();
+			},
+			CurrentState::IMPORT => {
+				for event in event_pump.poll_iter() {
+					match event {
+						Event::Quit {..} |
+						Event::KeyDown { keycode: Some(Keycode::Escape), .. } 
+							=> { break 'running },
+						Event::KeyDown { keycode: Some(Keycode::M), ..}
+							=> {
+								modal.toggle();
+								state = CurrentState::PAUSED;
+							}
+						Event::KeyDown { keycode: Some(Keycode::Up), ..}
+							=> { modal.up(); }
+						Event::KeyDown { keycode: Some(Keycode::Down), ..}
+							=> { modal.down() }
+						Event::KeyDown { keycode: Some(Keycode::Return), ..} 
+							=> {
+								let chosen_file = modal.get_chosen_file();
+								grid = Grid::build_from_file(HEIGHT as i32, WIDTH as i32, SCALE as i32, chosen_file);
+								FPS = EDIT_FPS;
+								modal.toggle();
+								state = CurrentState::SETUP;
+							}
+						_ => { }
+					}
+				}
 			}
 		}
 
@@ -197,7 +229,7 @@ fn main() -> Result<(), String> {
 		}
 		
 		canvas.present();
-		::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / FPS));
+		::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / (FPS as u32)));
 	}
 
 	Ok(())
