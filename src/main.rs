@@ -55,7 +55,7 @@ fn main() -> Result<(), String> {
 
 	let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
 
-	let fc = FontCreator::build("./FiraCode-Retina.ttf".to_string(), ttf_context, texture_creator, SCALE);
+	let fc = FontCreator::build("./assets/FiraCode-Retina.ttf".to_string(), ttf_context, texture_creator, SCALE);
 
 	let mut grid: Grid = Grid::build(HEIGHT, WIDTH, SCALE);
 	let mut state: CurrentState = CurrentState::SETUP;
