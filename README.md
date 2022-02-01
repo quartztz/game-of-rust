@@ -1,5 +1,7 @@
 # conway's game of rust - an SDL2 implementation
 
+![gun and eater](https://i.imgur.com/2vtVgX2.gif)
+
 [Conway's Game Of Life](en.wikipedia.org/wiki/Conway%27s_Game_Of_Life) is a cool mathematical game that is immensely enhanced by the ability to quickly simulate a game state using a computer. This explains its popularity as a code project, and my interest in tossing my hat in the ring when writing my own implementation using the [sdl2](https://docs.rs/sdl2/latest/sdl2/) bindings in rust, to learn the language.
 
 ## background
