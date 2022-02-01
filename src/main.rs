@@ -18,7 +18,7 @@ pub mod import_modal;
 use import_modal::*;
 
 enum CurrentState {
-  SETUP,
+    SETUP,
 	PAUSED,
 	RUNNING,
 	IMPORT,

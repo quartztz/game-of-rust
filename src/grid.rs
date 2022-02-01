@@ -9,9 +9,9 @@ use std::cmp;
 use std::fs;
 use std::io::{BufWriter, Write};
 
-pub const BACKGROUND: pixels::Color = pixels::Color::RGB(0, 0, 0);
-pub const DEAD: pixels::Color = pixels::Color::RGB(0, 0x80, 0);
-pub const ALIVE: pixels::Color = pixels::Color::RGB(0, 0xff, 0);
+pub const BACKGROUND: pixels::Color = pixels::Color::RGB(0x00, 0x00, 0x00);
+pub const DEAD: pixels::Color = pixels::Color::RGB(0x00, 0x70, 0x00);
+pub const ALIVE: pixels::Color = pixels::Color::RGB(0x00, 0xff, 0x00);
 
 pub const P: f32 = 0.75;
 
@@ -27,7 +27,7 @@ pub trait Stringable {
 
 pub fn open_file_lines(file: &str) -> Vec<String> {
 	return fs::read_to_string(file)
-		.expect("something went wrong")
+		.expect("something went wrong while opening file, ")
 		.split("\n")
 		.map(|s| s.to_string())
 		.collect();
@@ -69,7 +69,7 @@ impl Cell {
 	}
 
 	pub fn update(&self) -> Cell {
-		Cell {
+        Cell {
 			x: self.x, 
 			y: self.y,
 			rect: self.rect,
